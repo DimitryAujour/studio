@@ -1,11 +1,11 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { askQuestion } from './actions';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useEffect, useRef } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles } from 'lucide-react';
 
@@ -30,7 +30,7 @@ function SubmitButton() {
 
 export function QAForm() {
   const initialState = { answer: null, error: null };
-  const [state, formAction] = useFormState(askQuestion, initialState);
+  const [state, formAction] = useActionState(askQuestion, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
@@ -43,7 +43,7 @@ export function QAForm() {
       });
     }
     if (state.answer) {
-        formRef.current?.reset();
+      formRef.current?.reset();
     }
   }, [state, toast]);
 
