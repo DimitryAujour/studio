@@ -1,3 +1,4 @@
+
 'use client';
 import {
   SidebarProvider,
@@ -9,12 +10,22 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { BookCopy, Bot, HelpingHand } from 'lucide-react';
+import { BookCopy, Bot, HelpingHand, BookText, ChevronDown } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { UserNav } from '@/components/user-nav';
 import Link from 'next/link';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import React from 'react';
+
 
 export default function MainLayout({
   children,
@@ -22,6 +33,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isTopicsOpen, setIsTopicsOpen] = React.useState(false);
 
   return (
     <SidebarProvider>
@@ -67,6 +79,51 @@ export default function MainLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+             <SidebarMenuItem>
+                <Collapsible open={isTopicsOpen} onOpenChange={setIsTopicsOpen}>
+                  <CollapsibleTrigger asChild>
+                     <SidebarMenuButton className="w-full justify-start">
+                        <BookText />
+                        <span>Topics</span>
+                        <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${isTopicsOpen ? 'rotate-180' : ''}`} />
+                      </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                          <Link href="#">The concept of God (Allah)</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                          <Link href="#">Prophets in Islam</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                           <Link href="#">The Quran's compilation</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                           <Link href="#">Understanding Hadith</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                       <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                           <Link href="#">Role of women in Islam</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                       <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                           <Link href="#">Concept of Jihad</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
