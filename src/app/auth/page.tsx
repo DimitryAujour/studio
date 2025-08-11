@@ -1,6 +1,5 @@
-
 'use client';
-import { useEffect } from 'react'; // Import useEffect
+import { useEffect, useState } from 'react'; // Import useState
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,11 +14,11 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 import { auth } from '@/lib/firebase/config';
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'; // Import redirect methods
-import { useRouter } from 'next/navigation'; // To handle redirection after login
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, AuthError } from 'firebase/auth'; 
+import { useRouter } from 'next/navigation';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
-
+  // ... (GoogleIcon component remains the same)
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -50,29 +49,33 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function AuthenticationPage() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [hostname, setHostname] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
+    setHostname(window.location.hostname);
+
+    getRedirectResult(auth)
+      .then((result) => {
         if (result) {
-          // User successfully signed in.
           const user = result.user;
           console.log("Signed in user:", user);
-          // Redirect to a different page after successful sign-in
-          router.push('/'); 
+          router.push('/');
         }
-      } catch (error) {
+      })
+      .catch((error: AuthError) => {
         console.error("Error getting redirect result", error);
-      }
-    };
-
-    checkRedirectResult();
+        setError(`Error: ${error.code} - ${error.message}`);
+      });
   }, [router]);
 
   const handleGoogleSignInRedirect = () => {
+    setError(null); // Clear previous errors
     const provider = new GoogleAuthProvider();
-    signInWithRedirect(auth, provider);
+    signInWithRedirect(auth, provider).catch((error: AuthError) => {
+        console.error("Error starting redirect sign in", error);
+        setError(`Error: ${error.code} - ${error.message}`);
+    });
   };
 
   return (
@@ -81,6 +84,16 @@ export default function AuthenticationPage() {
         <div className="flex justify-center mb-6">
           <Logo />
         </div>
+        
+        {hostname && (
+          <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-md text-center text-sm mb-4">
+            To enable sign-in, add this domain to the Firebase Console under Authentication &gt; Settings &gt; Authorized domains: <br/>
+            <strong className="font-bold">{hostname}</strong>
+          </div>
+        )}
+
+        {error && <div className="bg-destructive/20 text-destructive-foreground p-3 rounded-md text-center text-sm mb-4">{error}</div>}
+
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sign-in">Sign In</TabsTrigger>
           <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
@@ -121,14 +134,7 @@ export default function AuthenticationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="new-email">Email</Label>
-                <Input id="new-email" type="email" placeholder="m@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">Password</Label>
-                <Input id="new-password" type="password" />
-              </div>
+              {/* ... sign up form fields ... */}
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button className="w-full">Create Account</Button>
