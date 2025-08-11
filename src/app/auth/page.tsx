@@ -1,4 +1,6 @@
+
 'use client';
+import { useEffect } from 'react'; // Import useEffect
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,8 +14,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
+import { auth } from '@/lib/firebase/config';
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'; // Import redirect methods
+import { useRouter } from 'next/navigation'; // To handle redirection after login
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -43,6 +49,32 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function AuthenticationPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          // User successfully signed in.
+          const user = result.user;
+          console.log("Signed in user:", user);
+          // Redirect to a different page after successful sign-in
+          router.push('/'); 
+        }
+      } catch (error) {
+        console.error("Error getting redirect result", error);
+      }
+    };
+
+    checkRedirectResult();
+  }, [router]);
+
+  const handleGoogleSignInRedirect = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithRedirect(auth, provider);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Tabs defaultValue="sign-in" className="w-full max-w-md">
@@ -73,7 +105,7 @@ export default function AuthenticationPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button className="w-full">Sign In</Button>
-               <Button variant="outline" className="w-full">
+               <Button variant="outline" className="w-full" onClick={handleGoogleSignInRedirect}>
                 <GoogleIcon className="mr-2 h-4 w-4"/>
                 Continue with Google
               </Button>
@@ -100,7 +132,7 @@ export default function AuthenticationPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button className="w-full">Create Account</Button>
-               <Button variant="outline" className="w-full">
+               <Button variant="outline" className="w-full" onClick={handleGoogleSignInRedirect}>
                 <GoogleIcon className="mr-2 h-4 w-4"/>
                 Continue with Google
               </Button>
