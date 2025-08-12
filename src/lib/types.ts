@@ -10,6 +10,7 @@ export type SalahStep = {
   name: string;
   description: string;
   arabic: string;
+  transliteration: string;
   translation: string;
   imageUrl: string;
   audioUrl: string;

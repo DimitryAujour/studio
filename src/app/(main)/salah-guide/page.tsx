@@ -40,9 +40,10 @@ export default function SalahGuidePage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <p className="text-foreground/80">{step.description}</p>
-                  <div className="rounded-lg border bg-card p-4">
+                  <div className="rounded-lg border bg-card p-4 space-y-2">
                     <p className="text-xl text-right font-headline" dir="rtl">{step.arabic}</p>
-                    <p className="text-sm text-muted-foreground text-right italic">"{step.translation}"</p>
+                    <p className="text-sm text-muted-foreground text-right italic">{step.transliteration}</p>
+                    <p className="text-sm text-muted-foreground text-right">"{step.translation}"</p>
                   </div>
                   <Button variant="outline" className="w-full md:w-auto self-start">
                     <Volume2 className="mr-2 h-4 w-4" />
