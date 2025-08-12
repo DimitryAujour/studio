@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { SalahStep } from '@/lib/types';
 import { Loader2, Volume2, Play } from 'lucide-react';
 import Image from 'next/image';
-import { useActionState, useRef, useState, useEffect } from 'react';
+import { useActionState, useRef, useState, useEffect, useTransition } from 'react';
 import { getPronunciation } from './actions';
 
 export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
@@ -19,9 +19,11 @@ export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [loadingStep, setLoadingStep] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPending, startTransition] = useTransition();
+
 
   const initialState = { audioDataUri: null, error: null };
-  const [state, formAction, isPending] = useActionState(getPronunciation, initialState);
+  const [state, formAction] = useActionState(getPronunciation, initialState);
 
   useEffect(() => {
     if (state.error) {
@@ -41,6 +43,13 @@ export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
     }
   }, [state, toast]);
 
+  useEffect(() => {
+    if (isPending) {
+        // Already handled by loadingStep
+    }
+  }, [isPending]);
+
+
   const handlePlayPronunciation = (step: SalahStep) => {
     if (loadingStep !== null) return;
     
@@ -48,7 +57,9 @@ export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
     setActiveStep(step.id);
     const formData = new FormData();
     formData.append('text', step.arabic);
-    formAction(formData);
+    startTransition(() => {
+        formAction(formData);
+    });
   };
 
   return (
