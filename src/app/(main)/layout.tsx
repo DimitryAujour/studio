@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { BookCopy, Bot, HelpingHand, BookText, ChevronDown } from 'lucide-react';
+import { BookCopy, Bot, HelpingHand, BookText, ChevronDown, Settings } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { UserNav } from '@/components/user-nav';
@@ -124,6 +124,18 @@ export default function MainLayout({
                   </CollapsibleContent>
                 </Collapsible>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/settings'}
+                tooltip={{ children: 'Settings' }}
+              >
+                <Link href="/settings">
+                  <Settings />
+                  <span>Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
