@@ -1,32 +1,137 @@
-
 'use client';
 
+import { useActionState, useEffect, useState, useTransition } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import type { UserProfile } from '@/lib/types';
+import { Loader2, User } from 'lucide-react';
+import { getUserProfile, updateUserProfile } from './actions';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function SubmitButton() {
+  const [isPending, startTransition] = useTransition();
+
+  // This is a bit of a hack to get the pending state from the form
+  useEffect(() => {
+    const form = document.querySelector('form');
+    if (form) {
+      const handler = () => startTransition(() => {});
+      form.addEventListener('submit', handler);
+      return () => form.removeEventListener('submit', handler);
+    }
+  }, [startTransition]);
+
+
+  return (
+    <Button type="submit" disabled={isPending}>
+      {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+      Update Profile
+    </Button>
+  );
+}
+
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const initialState = { message: null, error: null };
+  const [state, formAction] = useActionState(updateUserProfile, initialState);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      setLoading(true);
+      const userProfile = await getUserProfile();
+      setProfile(userProfile);
+      setLoading(false);
+    }
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    if (state.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: state.error,
+      });
+    }
+    if (state.message) {
+      toast({
+        title: 'Success!',
+        description: state.message,
+      });
+    }
+  }, [state, toast]);
+
+  if (loading) {
+    return (
+       <div className="flex flex-col gap-6">
+         <div>
+            <Skeleton className="h-10 w-1/3" />
+            <Skeleton className="h-4 w-1/2 mt-2" />
+          </div>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-4 w-2/3 mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-8">
+               <div className="flex items-center gap-4">
+                  <Skeleton className="h-20 w-20 rounded-full" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-10 w-28" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-20 w-full" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-12 w-48" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-1/2" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                 <Skeleton className="h-10 w-32" />
+            </CardContent>
+          </Card>
+       </div>
+    )
+  }
+
+  if (!profile) {
+     return (
+        <div className="flex flex-col gap-6 items-center text-center">
+             <h1 className="text-3xl font-bold font-headline tracking-tight">
+              Settings
+            </h1>
+            <p className="text-muted-foreground">
+              Please log in to view your settings.
+            </p>
+            <Button asChild>
+                <a href="/auth">Login</a>
+            </Button>
+        </div>
+     )
+  }
+
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -37,87 +142,95 @@ export default function SettingsPage() {
           Manage your account and profile settings.
         </p>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>
-            This information will be displayed publicly so be careful what you
-            share.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src="/avatars/01.png" alt="User avatar" />
-              <AvatarFallback>
-                <User className="h-10 w-10" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col gap-2">
-              <Button>Change Photo</Button>
-              <p className="text-xs text-muted-foreground">
-                JPG, GIF or PNG. 1MB max.
-              </p>
+      <form action={formAction}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>
+              This information will be displayed publicly so be careful what you
+              share.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={profile.avatarUrl} alt="User avatar" />
+                <AvatarFallback>
+                  <User className="h-10 w-10" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col gap-2">
+                <Button>Change Photo</Button>
+                <p className="text-xs text-muted-foreground">
+                  JPG, GIF or PNG. 1MB max.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="description">About Me</Label>
-            <Textarea
-              id="description"
-              placeholder="Tell us a little bit about yourself"
-              defaultValue="I am a new Muslim eager to learn and grow in my faith."
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label htmlFor="aboutMe">About Me</Label>
+              <Textarea
+                id="aboutMe"
+                name="aboutMe"
+                placeholder="Tell us a little bit about yourself"
+                defaultValue={profile.aboutMe}
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label>Islamic Branch</Label>
-            <RadioGroup defaultValue="sunni" className="flex gap-4">
-              <div>
-                <RadioGroupItem value="sunni" id="sunni" className="peer sr-only" />
-                <Label htmlFor="sunni" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                  Sunni
-                </Label>
-              </div>
-               <div>
-                <RadioGroupItem value="shia" id="shia" className="peer sr-only" />
-                <Label htmlFor="shia" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                  Shia
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
+            <div className="grid gap-2">
+              <Label>Islamic Branch</Label>
+              <RadioGroup name="islamicBranch" defaultValue={profile.islamicBranch} className="flex gap-4">
+                <div>
+                  <RadioGroupItem value="sunni" id="sunni" className="peer sr-only" />
+                  <Label htmlFor="sunni" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                    Sunni
+                  </Label>
+                </div>
+                 <div>
+                  <RadioGroupItem value="shia" id="shia" className="peer sr-only" />
+                  <Label htmlFor="shia" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                    Shia
+                  </Label>
+                </div>
+                 <div>
+                  <RadioGroupItem value="other" id="other" className="peer sr-only" />
+                  <Label htmlFor="other" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                    Other
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div className="grid gap-2">
-                <Label htmlFor="language">Language</Label>
-                <Select defaultValue="en">
-                    <SelectTrigger id="language">
-                        <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="ar">Arabic (العربية)</SelectItem>
-                        <SelectItem value="ur">Urdu (اردو)</SelectItem>
-                        <SelectItem value="fr">French (Français)</SelectItem>
-                        <SelectItem value="es">Spanish (Español)</SelectItem>
-                    </SelectContent>
-                </Select>
-             </div>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div className="grid gap-2">
+                  <Label htmlFor="language">Language</Label>
+                   <Select name="language" defaultValue={profile.language}>
+                      <SelectTrigger id="language">
+                          <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="ar">Arabic (العربية)</SelectItem>
+                          <SelectItem value="ur">Urdu (اردو)</SelectItem>
+                          <SelectItem value="fr">French (Français)</SelectItem>
+                          <SelectItem value="es">Spanish (Español)</SelectItem>
+                      </SelectContent>
+                  </Select>
+               </div>
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="values">My Values</Label>
-            <Input id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue="Knowledge, Prayer, Community"/>
-             <p className="text-xs text-muted-foreground">
-                Enter a few values that are important to you, separated by commas.
-              </p>
-          </div>
+            <div className="grid gap-2">
+              <Label htmlFor="values">My Values</Label>
+              <Input name="values" id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue={profile.values}/>
+               <p className="text-xs text-muted-foreground">
+                  Enter a few values that are important to you, separated by commas.
+                </p>
+            </div>
 
-          <Button>Update Profile</Button>
-        </CardContent>
-      </Card>
+            <SubmitButton />
+          </CardContent>
+        </Card>
+      </form>
     </div>
   );
 }

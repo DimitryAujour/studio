@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, AuthError } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 
 export default function AuthenticationPage() {
@@ -22,6 +23,17 @@ export default function AuthenticationPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [domainMessage, setDomainMessage] = useState<string | null>(null);
+
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const currentDomain = window.location.hostname;
+      if (currentDomain === 'localhost' || currentDomain.includes('127.0.0.1')) {
+         setDomainMessage(`To enable email/password sign-in, please add your local development domain to the authorized domains list in the Firebase Console. The domain to add is: ${currentDomain}`);
+      }
+    }
+  });
+
 
   const handleSignUp = async () => {
     setError(null);
@@ -31,7 +43,20 @@ export default function AuthenticationPage() {
     }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('User created:', userCredential.user);
+      const user = userCredential.user;
+      console.log('User created:', user);
+      
+      // Create a user profile in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        email: user.email,
+        aboutMe: 'I am a new Muslim eager to learn and grow in my faith.',
+        islamicBranch: 'sunni',
+        language: 'en',
+        values: 'Knowledge, Prayer, Community',
+        avatarUrl: '/avatars/01.png',
+      });
+
       router.push('/'); // Redirect to homepage after successful sign-up
     } catch (e) {
       const error = e as AuthError;
@@ -71,6 +96,7 @@ export default function AuthenticationPage() {
           <Logo />
         </div>
         
+        {domainMessage && <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-md text-center text-sm mb-4" role="alert">{domainMessage}</div>}
         {error && <div className="bg-destructive/20 text-destructive p-3 rounded-md text-center text-sm mb-4">{error}</div>}
 
         <TabsList className="grid w-full grid-cols-2">

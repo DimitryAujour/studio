@@ -15,3 +15,13 @@ export type SalahStep = {
   imageUrl: string;
   audioUrl: string;
 };
+
+export type UserProfile = {
+  uid: string;
+  email: string | null;
+  aboutMe?: string;
+  islamicBranch?: 'sunni' | 'shia' | 'other';
+  language?: 'en' | 'ar' | 'ur' | 'fr' | 'es';
+  values?: string;
+  avatarUrl?: string;
+};
