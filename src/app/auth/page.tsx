@@ -61,7 +61,14 @@ export default function AuthenticationPage() {
     } catch (e) {
       const error = e as AuthError;
       console.error('Error signing up:', error.code, error.message);
-      setError(error.message);
+      if (error.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('The password is too weak. Please choose a stronger password.');
+      }
+      else {
+        setError(error.message);
+      }
     }
   };
   
@@ -78,7 +85,11 @@ export default function AuthenticationPage() {
     } catch (e) {
         const error = e as AuthError;
         console.error('Error signing in:', error.code, error.message);
-        setError(error.message);
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            setError('Invalid email or password. Please try again.');
+        } else {
+            setError(error.message);
+        }
     }
   };
 
