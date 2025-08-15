@@ -35,6 +35,6 @@ export async function getPronunciation(
     return { error: 'Could not generate audio. Please try again.', audioDataUri: null };
   } catch (e) {
     console.error(e);
-    return { error: 'An unexpected error occurred. Please try again later.', audioDataUri: null };
+    return { error: 'Audio generation failed. This can happen occasionally. Please try again in a moment.', audioDataUri: null };
   }
 }
