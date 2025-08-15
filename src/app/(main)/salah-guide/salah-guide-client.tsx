@@ -7,59 +7,21 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import type { SalahStep } from '@/lib/types';
-import { Loader2, Volume2, Play } from 'lucide-react';
+import { Volume2, Play } from 'lucide-react';
 import Image from 'next/image';
-import { useActionState, useRef, useState, useEffect, useTransition } from 'react';
-import { getPronunciation } from './actions';
+import { useRef, useState } from 'react';
 
 export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
-  const { toast } = useToast();
   const [activeStep, setActiveStep] = useState<number | null>(null);
-  const [loadingStep, setLoadingStep] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPending, startTransition] = useTransition();
-
-
-  const initialState = { audioDataUri: null, error: null };
-  const [state, formAction] = useActionState(getPronunciation, initialState);
-
-  useEffect(() => {
-    if (state.error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: state.error,
-      });
-      setLoadingStep(null); 
-    }
-    if (state.audioDataUri) {
-        if(audioRef.current) {
-            audioRef.current.src = state.audioDataUri;
-            audioRef.current.play().catch(e => console.error("Error playing audio:", e));
-        }
-      setLoadingStep(null);
-    }
-  }, [state, toast]);
-
-  useEffect(() => {
-    if (isPending) {
-        // Already handled by loadingStep
-    }
-  }, [isPending]);
-
 
   const handlePlayPronunciation = (step: SalahStep) => {
-    if (loadingStep !== null) return;
-    
-    setLoadingStep(step.id);
-    setActiveStep(step.id);
-    const formData = new FormData();
-    formData.append('text', step.arabic);
-    startTransition(() => {
-        formAction(formData);
-    });
+    if (audioRef.current) {
+      setActiveStep(step.id);
+      audioRef.current.src = step.audioUrl;
+      audioRef.current.play().catch((e) => console.error("Error playing audio:", e));
+    }
   };
 
   return (
@@ -99,16 +61,13 @@ export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
                     variant="outline"
                     className="w-full md:w-auto self-start"
                     onClick={() => handlePlayPronunciation(step)}
-                    disabled={loadingStep !== null}
                   >
-                    {loadingStep === step.id ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : activeStep === step.id && !loadingStep ? (
+                    {activeStep === step.id ? (
                       <Play className="mr-2 h-4 w-4" />
                     ) : (
                       <Volume2 className="mr-2 h-4 w-4" />
                     )}
-                    {loadingStep === step.id ? 'Generating...' : 'Play Pronunciation'}
+                    Play Pronunciation
                   </Button>
                 </div>
               </div>
