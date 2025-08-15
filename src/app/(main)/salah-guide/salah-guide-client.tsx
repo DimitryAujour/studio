@@ -83,8 +83,8 @@ export function SalahGuideClient({ steps }: { steps: SalahStep[] }) {
                   />
                 </div>
                 <div className="flex flex-col gap-4">
-                  <p className="text-foreground/80">{step.description}</p>
                   <div className="rounded-lg border bg-card p-4 space-y-2">
+                     <p className="text-foreground/80" dangerouslySetInnerHTML={{ __html: step.description }} />
                     <p className="text-xl text-right font-headline" dir="rtl">
                       {step.arabic}
                     </p>
