@@ -55,7 +55,7 @@ export const salahSteps: SalahStep[] = [
     {
       id: 1,
       name: 'Niyyah (Intention)',
-      description: 'Stand facing the Qibla (direction of Kaaba in Mecca) and make your intention to pray. This is done in the heart and not spoken. You can use <a href="https://qiblafinder.withgoogle.com/">tools on the web such as this</a> to find the direction of the Kaaba.',
+      description: 'Stand facing the Qibla (direction of Kaaba in Mecca) and make your intention to pray. This is done in the heart and not spoken. You can use <a href="https://qiblafinder.withgoogle.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">tools on the web such as this</a> to find the direction of the Kaaba.',
       arabic: 'النية',
       transliteration: 'An-Niyyah',
       translation: 'The Intention',
