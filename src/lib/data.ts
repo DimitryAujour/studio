@@ -59,7 +59,7 @@ export const salahSteps: SalahStep[] = [
       arabic: 'النية',
       transliteration: 'An-Niyyah',
       translation: 'The Intention',
-      imageUrl: '/salah-guide/niyyah.png',
+      imageUrl: '/images/salah-guide/niyyah.png',
       audioUrl: '/audio/niyyah.mp3',
     },
     {
