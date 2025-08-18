@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { BookCopy, Bot, HelpingHand, BookText, ChevronDown, Settings } from 'lucide-react';
+import { BookCopy, Bot, HelpingHand, BookText, ChevronDown, Settings, BookOpen } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { UserNav } from '@/components/user-nav';
@@ -34,6 +34,7 @@ export default function MainLayout({
 }) {
   const pathname = usePathname();
   const [isTopicsOpen, setIsTopicsOpen] = React.useState(false);
+  const [isQuranOpen, setIsQuranOpen] = React.useState(false);
 
   return (
     <SidebarProvider>
@@ -79,6 +80,22 @@ export default function MainLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+                <Collapsible open={isQuranOpen} onOpenChange={setIsQuranOpen}>
+                  <CollapsibleTrigger asChild>
+                     <SidebarMenuButton className="w-full justify-start">
+                        <BookOpen />
+                        <span>Quran</span>
+                        <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${isQuranOpen ? 'rotate-180' : ''}`} />
+                      </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {/* Add Surah links here later */}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenuItem>
              <SidebarMenuItem>
                 <Collapsible open={isTopicsOpen} onOpenChange={setIsTopicsOpen}>
                   <CollapsibleTrigger asChild>
