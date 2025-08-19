@@ -59,7 +59,7 @@ export const salahSteps: SalahStep[] = [
       arabic: 'النية',
       transliteration: 'An-Niyyah',
       translation: 'The Intention',
-      imageUrl: '/images/salah-guide/niyyah.png',
+      imageUrl: 'https://placehold.co/600x400',
       audioUrl: '/audio/niyyah.mp3',
     },
     {
@@ -75,7 +75,7 @@ export const salahSteps: SalahStep[] = [
     {
       id: 3,
       name: 'Qiyam (Standing)',
-      description: 'Place your right hand over your left on your chest. Recite the opening chapter of the Quran, Al-Fatiha, followed by another short chapter or verses.',
+      description: 'Place your right hand over your left on your chest. Recite the opening chapter of the Quran, <a href="/quran/al-fatiha" class="text-primary hover:underline">Al-Fatiha</a>, followed by another short chapter or verses.',
       arabic: 'القيام',
       transliteration: 'Al-Qiyam',
       translation: 'The Standing',

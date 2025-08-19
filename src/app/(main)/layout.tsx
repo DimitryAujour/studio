@@ -34,7 +34,7 @@ export default function MainLayout({
 }) {
   const pathname = usePathname();
   const [isTopicsOpen, setIsTopicsOpen] = React.useState(false);
-  const [isQuranOpen, setIsQuranOpen] = React.useState(false);
+  const [isQuranOpen, setIsQuranOpen] = React.useState(true);
 
   return (
     <SidebarProvider>
@@ -91,7 +91,11 @@ export default function MainLayout({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {/* Add Surah links here later */}
+                       <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild isActive={pathname === '/quran/al-fatiha'}>
+                          <Link href="/quran/al-fatiha">Al-Fatiha</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </Collapsible>
