@@ -1,8 +1,18 @@
-export type Lesson = {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
+export type LearningTopic = {
+    title: string;
+    description: string;
+    icon: string;
+};
+
+export type LearningCategory = {
+    name: string;
+    topics: LearningTopic[];
+};
+
+export type LearningLevel = {
+    title: string;
+    description: string;
+    categories: LearningCategory[];
 };
 
 export type SalahStep = {

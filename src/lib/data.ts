@@ -1,55 +1,4 @@
-import type { Lesson, SalahStep } from './types';
-
-export const lessons: Lesson[] = [
-  {
-    id: 1,
-    title: 'The Shahada (Declaration of Faith)',
-    category: 'Pillars of Islam',
-    description: 'Understand the meaning and importance of the first pillar of Islam, the declaration of faith.',
-  },
-  {
-    id: 2,
-    title: 'Introduction to Salah (Prayer)',
-    category: 'Pillars of Islam',
-    description: 'Learn the fundamentals of the five daily prayers, their timings, and their significance in a Muslim\'s life.',
-  },
-  {
-    id: 3,
-    title: 'Wudu (Ablution)',
-    category: 'Prayer Prerequisites',
-    description: 'A step-by-step guide to performing Wudu, the ritual purification required before prayer.',
-  },
-  {
-    id: 4,
-    title: 'Zakat (Charity)',
-    category: 'Pillars of Islam',
-    description: 'Discover the concept of Zakat, its rules, and its role in creating a compassionate society.',
-  },
-  {
-    id: 5,
-    title: 'Sawm (Fasting in Ramadan)',
-    category: 'Pillars of Islam',
-    description: 'An overview of the fourth pillar of Islam, the fast of Ramadan, and its spiritual benefits.',
-  },
-  {
-    id: 6,
-    title: 'Hajj (Pilgrimage)',
-    category: 'Pillars of Islam',
-    description: 'Learn about the pilgrimage to Mecca, a once-in-a-lifetime duty for those who are able.',
-  },
-  {
-    id: 7,
-    title: 'Introduction to the Quran',
-    category: 'Core Beliefs',
-    description: 'Explore the holy book of Islam, its structure, and its central message to humanity.',
-  },
-  {
-    id: 8,
-    title: 'Prophet Muhammad (Peace Be Upon Him)',
-    category: 'Core Beliefs',
-    description: 'A brief biography of the final prophet and his role as a guide for all Muslims.',
-  },
-];
+import type { SalahStep } from './types';
 
 export const salahSteps: SalahStep[] = [
     {
@@ -75,7 +24,7 @@ export const salahSteps: SalahStep[] = [
     {
       id: 3,
       name: 'Qiyam (Standing)',
-      description: 'Place your right hand over your left on your chest. Recite the opening chapter of the Quran, <a href="/quran/al-fatiha" class="text-primary hover:underline">Al-Fatiha</a>, followed by another short chapter or verses, such as <a href="/quran/al-asr" class="text-primary hover:underline">Al-Asr</a>.',
+      description: 'Place your right hand over your left on your chest. Recite the opening chapter of the Quran, <a href="/quran/al-fatiha" class="text-primary hover:underline">Al-Fatiha</a>, followed by another short chapter or verses, such as <a href="/quran/al-asr" class="text-primary hover:underline">Surah Al-Asr</a>.',
       arabic: 'القيام',
       transliteration: 'Al-Qiyam',
       translation: 'The Standing',
@@ -163,3 +112,4 @@ export const salahSteps: SalahStep[] = [
       audioUrl: '/audio/tasleem.mp3',
     },
   ];
+

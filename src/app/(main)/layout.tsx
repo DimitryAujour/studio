@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { BookCopy, Bot, HelpingHand, BookText, ChevronDown, Settings, BookOpen } from 'lucide-react';
+import { Home, Bot, HelpingHand, BookText, ChevronDown, Settings, BookOpen } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { UserNav } from '@/components/user-nav';
@@ -51,7 +51,7 @@ export default function MainLayout({
                 tooltip={{ children: 'Learning Path' }}
               >
                 <Link href="/">
-                  <BookCopy />
+                  <Home />
                   <span>Learning Path</span>
                 </Link>
               </SidebarMenuButton>
