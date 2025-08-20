@@ -135,10 +135,12 @@ export const salahSteps: SalahStep[] = [
      {
       id: 9,
       name: 'Tashahhud',
-      description: 'After the second prostration of the second rak\'ah (and the last rak\'ah), sit for the Tashahhud. Recite the required supplications.',
-      arabic: 'التشهد',
-      transliteration: 'At-Tashahhud',
-      translation: 'The Testimony',
+      description: `When to Recite Tashahhud:
+<br/>- After the second rakʿah of any ṣalāh: you sit and recite the first Tashahhud, then continue standing for the next rakʿah. You do not give taslīm (salām) yet.
+<br/>- In the final sitting (whether 2, 3, or 4 rakʿah ṣalāh): you recite the Tashahhud and then the Ṣalāt al-Ibrāhīmiyyah (salutations upon Prophet Ibrahim and his family), then you finish with taslīm.`,
+      arabic: 'التَّحِيَّاتُ للهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ.',
+      transliteration: 'At-taḥiyyātu lillāhi waṣ-ṣalawātu waṭ-ṭayyibāt. As-salāmu ʿalayka ayyuhan-nabiyyu wa raḥmatullāhi wa barakātuh. As-salāmu ʿalaynā wa ʿalā ʿibādillāhiṣ-ṣāliḥīn. Ash-hadu an lā ilāha illā Allāh, wa ash-hadu anna Muḥammadan ʿabduhu wa rasūluh.',
+      translation: 'All compliments, prayers, and good things are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His servant and Messenger.',
       imageUrl: 'https://placehold.co/600x400',
       audioUrl: '/audio/tashahhud.mp3',
     },
@@ -153,3 +155,4 @@ export const salahSteps: SalahStep[] = [
       audioUrl: '/audio/tasleem.mp3',
     },
   ];
+
