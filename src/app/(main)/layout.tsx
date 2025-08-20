@@ -96,6 +96,11 @@ export default function MainLayout({
                           <Link href="/quran/al-fatiha">Al-Fatiha</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
+                       <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild isActive={pathname === '/quran/al-asr'}>
+                          <Link href="/quran/al-asr">Al-Asr</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </Collapsible>
