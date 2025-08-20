@@ -135,9 +135,7 @@ export const salahSteps: SalahStep[] = [
      {
       id: 9,
       name: 'Tashahhud',
-      description: `When to Recite Tashahhud:
-<br/>- After the second rakʿah of any ṣalāh: you sit and recite the first Tashahhud, then continue standing for the next rakʿah. You do not give taslīm (salām) yet.
-<br/>- In the final sitting (whether 2, 3, or 4 rakʿah ṣalāh): you recite the Tashahhud and then the Ṣalāt al-Ibrāhīmiyyah (salutations upon Prophet Ibrahim and his family), then you finish with taslīm.`,
+      description: 'When to Recite Tashahhud:<br/>- After the second rakʿah of any ṣalāh: you sit and recite the first Tashahhud, then continue standing for the next rakʿah. You do not give taslīm (salām) yet.<br/>- In the final sitting (whether 2, 3, or 4 rakʿah ṣalāh): you recite the Tashahhud and then the Ṣalāt al-Ibrāhīmiyyah (salutations upon Prophet Ibrahim and his family), then you finish with taslīm.',
       arabic: 'التَّحِيَّاتُ للهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ.',
       transliteration: 'At-taḥiyyātu lillāhi waṣ-ṣalawātu waṭ-ṭayyibāt. As-salāmu ʿalayka ayyuhan-nabiyyu wa raḥmatullāhi wa barakātuh. As-salāmu ʿalaynā wa ʿalā ʿibādillāhiṣ-ṣāliḥīn. Ash-hadu an lā ilāha illā Allāh, wa ash-hadu anna Muḥammadan ʿabduhu wa rasūluh.',
       translation: 'All compliments, prayers, and good things are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His servant and Messenger.',
@@ -146,6 +144,16 @@ export const salahSteps: SalahStep[] = [
     },
     {
       id: 10,
+      name: 'Ṣalāt al-Ibrāhīmiyyah',
+      description: 'Ṣalāt al-Ibrāhīmiyyah (also called al-ṣalawāt) is recited after the Tashahhud in the final rakʿah of the prayer. <br/><br/> <b>When to Recite:</b><br/>In the last rakʿah, after reciting the Tashahhud. Once you finish Ṣalāt al-Ibrāhīmiyyah, you complete the ṣalāh with taslīm.<br/><br/><b>Example:</b><br/>Fajr (2 rakʿah): Tashahhud → Ṣalāt al-Ibrāhīmiyyah → Taslīm.<br/>Maghrib (3 rakʿah): After 2 rakʿah sit → Tashahhud only → stand for 3rd rakʿah → final sitting: Tashahhud + Ṣalāt al-Ibrāhīmiyyah → Taslīm.',
+      arabic: 'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ.\nاللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ.',
+      transliteration: 'Allāhumma ṣalli ʿalā Muḥammad, wa ʿalā āli Muḥammad, kamā ṣallayta ʿalā Ibrāhīm, wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd. \n Allāhumma bārik ʿalā Muḥammad, wa ʿalā āli Muḥammad, kamā bārakta ʿalā Ibrāhīm, wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd.',
+      translation: 'O Allah, send prayers upon Muhammad and the family of Muhammad, as You sent prayers upon Ibrāhīm and the family of Ibrāhīm. Verily, You are Praiseworthy, Glorious. \n O Allah, send blessings upon Muhammad and the family of Muhammad, as You blessed Ibrāhīm and the family of Ibrāhīm. Verily, You are Praiseworthy, Glorious.',
+      imageUrl: 'https://placehold.co/600x400',
+      audioUrl: '/audio/salat-al-ibrahimiyyah.mp3',
+    },
+    {
+      id: 11,
       name: 'Tasleem (Salam)',
       description: 'To end the prayer, turn your face to the right and say "Assalamu Alaikum wa Rahmatullah", then turn to the left and say the same.',
       arabic: 'السلام عليكم ورحمة الله',
@@ -155,4 +163,3 @@ export const salahSteps: SalahStep[] = [
       audioUrl: '/audio/tasleem.mp3',
     },
   ];
-
