@@ -6,6 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Progress } from '@/components/ui/progress';
 import { BookOpenCheck, HandHelping, HeartHandshake, Microscope } from 'lucide-react';
 import React from 'react';
+import Link from 'next/link';
+
+// A simple function to create a URL-friendly slug from a title
+const createSlug = (title: string) => {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+};
+
 
 // Add a default Globe icon for level 3 to avoid missing icon errors
 const Globe = (props: React.SVGProps<SVGSVGElement>) => (
@@ -49,25 +56,28 @@ export function LearningPathCard({ topic }: { topic: LearningTopic }) {
   const { title, description, icon } = topic;
   const progress = getProgress(title);
   const IconComponent = iconComponents[icon] || BookOpenCheck;
+  const slug = createSlug(title);
 
   return (
-    <Card className="flex flex-col rounded-xl shadow-sm transition-all hover:shadow-lg">
-      <CardHeader>
-        <div className="flex items-center gap-4">
-            <div className="bg-primary/10 text-primary rounded-lg flex items-center justify-center size-12 shrink-0">
-                <IconComponent className="size-6" />
+    <Link href={`/lessons/${slug}`} className="block">
+        <Card className="flex flex-col h-full rounded-xl shadow-sm transition-all hover:shadow-lg">
+        <CardHeader>
+            <div className="flex items-center gap-4">
+                <div className="bg-primary/10 text-primary rounded-lg flex items-center justify-center size-12 shrink-0">
+                    <IconComponent className="size-6" />
+                </div>
+                <div>
+                    <CardTitle className="text-base font-semibold font-headline">{title}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
             </div>
-            <div>
-                <CardTitle className="text-base font-semibold font-headline">{title}</CardTitle>
-                <p className="text-sm text-muted-foreground">{description}</p>
-            </div>
-        </div>
-      </CardHeader>
-      <CardContent className="flex-grow" />
-      <CardFooter className="flex items-center gap-3 pt-4">
-        <Progress value={progress} className="h-2 w-full" />
-        <span className="text-sm font-medium text-muted-foreground">{progress}%</span>
-      </CardFooter>
-    </Card>
+        </CardHeader>
+        <CardContent className="flex-grow" />
+        <CardFooter className="flex items-center gap-3 pt-4">
+            <Progress value={progress} className="h-2 w-full" />
+            <span className="text-sm font-medium text-muted-foreground">{progress}%</span>
+        </CardFooter>
+        </Card>
+    </Link>
   );
 }
