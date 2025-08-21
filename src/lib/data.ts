@@ -1,3 +1,4 @@
+
 import type { SalahStep } from './types';
 
 export const salahSteps: SalahStep[] = [
@@ -69,7 +70,7 @@ export const salahSteps: SalahStep[] = [
       transliteration: 'Rabbighfir li',
       translation: 'My Lord, forgive me',
       imageUrl: 'https://placehold.co/600x400',
-      audioUrl: '/audio/jalsa.mp3',
+      audioUrl: '/audio/Rabbighfirli.mp3',
     },
     {
       id: 8,
@@ -89,7 +90,7 @@ export const salahSteps: SalahStep[] = [
       transliteration: 'At-taḥiyyātu lillāhi waṣ-ṣalawātu waṭ-ṭayyibāt. As-salāmu ʿalayka ayyuhan-nabiyyu wa raḥmatullāhi wa barakātuh. As-salāmu ʿalaynā wa ʿalā ʿibādillāhiṣ-ṣāliḥīn. Ash-hadu an lā ilāha illā Allāh, wa ash-hadu anna Muḥammadan ʿabduhu wa rasūluh.',
       translation: 'All compliments, prayers, and good things are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His servant and Messenger.',
       imageUrl: 'https://placehold.co/600x400',
-      audioUrl: '/audio/tashahhud.mp3',
+      audioUrl: '/audio/tashahud.mp3',
     },
     {
       id: 10,
@@ -99,7 +100,7 @@ export const salahSteps: SalahStep[] = [
       transliteration: 'Allāhumma ṣalli ʿalā Muḥammad, wa ʿalā āli Muḥammad, kamā ṣallayta ʿalā Ibrāhīm, wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd. \n Allāhumma bārik ʿalā Muḥammad, wa ʿalā āli Muḥammad, kamā bārakta ʿalā Ibrāhīm, wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd.',
       translation: 'O Allah, send prayers upon Muhammad and the family of Muhammad, as You sent prayers upon Ibrāhīm and the family of Ibrāhīm. Verily, You are Praiseworthy, Glorious. \n O Allah, send blessings upon Muhammad and the family of Muhammad, as You blessed Ibrāhīm and the family of Ibrāhīm. Verily, You are Praiseworthy, Glorious.',
       imageUrl: 'https://placehold.co/600x400',
-      audioUrl: '/audio/salat-al-ibrahimiyyah.mp3',
+      audioUrl: '/audio/salat-ibrahim.mp3',
     },
     {
       id: 11,
@@ -112,4 +113,3 @@ export const salahSteps: SalahStep[] = [
       audioUrl: '/audio/tasleem.mp3',
     },
   ];
-
