@@ -37,10 +37,10 @@ export function DuaOfTheDayDialog() {
          <div className="relative flex size-full min-h-[550px] flex-col items-center justify-center p-6 text-center group/design-root overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-10" style={{backgroundImage: "url('https://picsum.photos/seed/dua/1200/800')"}} data-ai-hint="islamic calligraphy background"></div>
             <div className="z-10 flex flex-col items-center justify-center flex-grow animate-fade-in-up">
-                <h1 className="text-primary-foreground text-4xl font-bold font-headline leading-tight mb-4 text-shadow-lg">
+                <h1 className="text-foreground text-4xl font-bold font-headline leading-tight mb-4 text-shadow-lg">
                     My Lord, increase me in knowledge.
                 </h1>
-                <p className="text-primary-foreground/80 text-lg font-medium leading-normal text-shadow">
+                <p className="text-foreground/80 text-lg font-medium leading-normal text-shadow">
                     Quran 20:114
                 </p>
             </div>
@@ -58,4 +58,3 @@ export function DuaOfTheDayDialog() {
     </Dialog>
   );
 }
-
