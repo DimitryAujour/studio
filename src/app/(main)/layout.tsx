@@ -25,6 +25,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import React from 'react';
+import { DuaOfTheDayDialog } from './components/dua-of-the-day-dialog';
 
 
 export default function MainLayout({
@@ -38,6 +39,7 @@ export default function MainLayout({
 
   return (
     <SidebarProvider>
+       <DuaOfTheDayDialog />
       <Sidebar>
         <SidebarHeader>
           <Logo />
