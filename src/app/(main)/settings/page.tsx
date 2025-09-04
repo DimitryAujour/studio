@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useActionState, useEffect, useState, useRef } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useEffect, useState, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +13,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/lib/types';
 import { Loader2, User, Upload } from 'lucide-react';
-import { updateUserProfile } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { onAuthStateChanged, User as AuthUser } from 'firebase/auth';
 import { auth, db, storage } from '@/lib/firebase/config';
@@ -22,27 +20,14 @@ import Link from 'next/link';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button type="submit" disabled={pending}>
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      Update Profile
-    </Button>
-  );
-}
-
 export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const initialState = { message: null, error: null };
-  const [state, formAction] = useActionState(updateUserProfile, initialState);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -71,22 +56,6 @@ export default function SettingsPage() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (state.error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: state.error,
-      });
-    }
-    if (state.message) {
-      toast({
-        title: 'Success!',
-        description: state.message,
-      });
-    }
-  }, [state, toast]);
-  
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
@@ -94,22 +63,14 @@ export default function SettingsPage() {
     setUploading(true);
 
     try {
-      // Create a storage reference
       const storageRef = ref(storage, `avatars/${user.uid}/${file.name}`);
-
-      // Upload the file
       const snapshot = await uploadBytes(storageRef, file);
-
-      // Get the download URL
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // Update the user's profile in Firestore
       const userProfileRef = doc(db, 'users', user.uid);
       await setDoc(userProfileRef, { avatarUrl: downloadURL }, { merge: true });
 
-      // Update the local state to show the new avatar immediately
       setProfile((prevProfile) => prevProfile ? { ...prevProfile, avatarUrl: downloadURL } : { avatarUrl: downloadURL } as UserProfile);
-
 
       toast({
         title: 'Success!',
@@ -125,6 +86,42 @@ export default function SettingsPage() {
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleProfileSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!user) return;
+
+    setUpdatingProfile(true);
+    const formData = new FormData(event.currentTarget);
+    const profileData = {
+      aboutMe: formData.get('aboutMe') as string,
+      islamicBranch: formData.get('islamicBranch') as 'sunni' | 'shia' | 'other',
+      language: formData.get('language') as 'en' | 'ar' | 'ur' | 'fr' | 'es',
+      values: formData.get('values') as string,
+    };
+
+    try {
+      const userProfileRef = doc(db, 'users', user.uid);
+      await setDoc(userProfileRef, profileData, { merge: true });
+      
+      setProfile((prevProfile) => prevProfile ? { ...prevProfile, ...profileData } : null);
+
+      toast({
+        title: 'Success!',
+        description: 'Your profile has been updated.',
+      });
+
+    } catch (error) {
+       console.error("Error updating profile:", error);
+       toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: 'There was an error updating your profile. Please try again.',
+      });
+    } finally {
+        setUpdatingProfile(false);
     }
   };
 
@@ -212,8 +209,7 @@ export default function SettingsPage() {
           Manage your account and profile settings.
         </p>
       </div>
-      <form action={formAction}>
-        <Input type="hidden" name="uid" value={user!.uid} />
+      <form onSubmit={handleProfileSubmit}>
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>
@@ -316,7 +312,10 @@ export default function SettingsPage() {
                 </p>
             </div>
 
-            <SubmitButton />
+            <Button type="submit" disabled={updatingProfile}>
+                {updatingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Update Profile
+            </Button>
           </CardContent>
         </Card>
       </form>
