@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useState, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/lib/types';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, Upload } from 'lucide-react';
 import { updateUserProfile } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { onAuthStateChanged, User as AuthUser } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config';
+import { auth, db, storage } from '@/lib/firebase/config';
 import Link from 'next/link';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -37,6 +38,8 @@ export default function SettingsPage() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initialState = { message: null, error: null };
   const [state, formAction] = useActionState(updateUserProfile, initialState);
@@ -82,6 +85,47 @@ export default function SettingsPage() {
       });
     }
   }, [state, toast]);
+  
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+
+    try {
+      // Create a storage reference
+      const storageRef = ref(storage, `avatars/${user.uid}/${file.name}`);
+
+      // Upload the file
+      const snapshot = await uploadBytes(storageRef, file);
+
+      // Get the download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Update the user's profile in Firestore
+      const userProfileRef = doc(db, 'users', user.uid);
+      await setDoc(userProfileRef, { avatarUrl: downloadURL }, { merge: true });
+
+      // Update the local state to show the new avatar immediately
+      setProfile((prevProfile) => prevProfile ? { ...prevProfile, avatarUrl: downloadURL } : null);
+
+      toast({
+        title: 'Success!',
+        description: 'Your photo has been updated.',
+      });
+
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: 'There was an error uploading your photo. Please try again.',
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -185,7 +229,25 @@ export default function SettingsPage() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-2">
-                <Button>Change Photo</Button>
+                <Input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/png, image/jpeg, image/gif"
+                />
+                <Button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
+                  {uploading ? 'Uploading...' : 'Change Photo'}
+                </Button>
                 <p className="text-xs text-muted-foreground">
                   JPG, GIF or PNG. 1MB max.
                 </p>
