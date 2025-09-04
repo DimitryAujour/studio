@@ -14,6 +14,9 @@ import type { UserProfile } from '@/lib/types';
 import { Loader2, User } from 'lucide-react';
 import { getUserProfile, updateUserProfile } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { onAuthStateChanged, User as AuthUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
+import Link from 'next/link';
 
 function SubmitButton() {
   const [isPending, startTransition] = useTransition();
@@ -22,7 +25,11 @@ function SubmitButton() {
   useEffect(() => {
     const form = document.querySelector('form');
     if (form) {
-      const handler = () => startTransition(() => {});
+      const handler = (e: SubmitEvent) => {
+        if ((e.target as HTMLFormElement).checkValidity()) {
+          startTransition(() => {});
+        }
+      };
       form.addEventListener('submit', handler);
       return () => form.removeEventListener('submit', handler);
     }
@@ -40,6 +47,7 @@ function SubmitButton() {
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -47,13 +55,18 @@ export default function SettingsPage() {
   const [state, formAction] = useActionState(updateUserProfile, initialState);
 
   useEffect(() => {
-    async function fetchProfile() {
-      setLoading(true);
-      const userProfile = await getUserProfile();
-      setProfile(userProfile);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUser(user);
+        const userProfile = await getUserProfile(user.uid);
+        setProfile(userProfile);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
       setLoading(false);
-    }
-    fetchProfile();
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -115,7 +128,7 @@ export default function SettingsPage() {
     )
   }
 
-  if (!profile) {
+  if (!user || !profile) {
      return (
         <div className="flex flex-col gap-6 items-center text-center">
              <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -125,7 +138,7 @@ export default function SettingsPage() {
               Please log in to view your settings.
             </p>
             <Button asChild>
-                <a href="/auth">Login</a>
+                <Link href="/auth">Login</Link>
             </Button>
         </div>
      )
@@ -143,6 +156,7 @@ export default function SettingsPage() {
         </p>
       </div>
       <form action={formAction}>
+        <Input type="hidden" name="uid" value={user.uid} />
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>

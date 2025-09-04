@@ -1,12 +1,13 @@
 'use server';
 
-import { auth, db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/config';
 import { UserProfile } from '@/lib/types';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 const profileSchema = z.object({
+  uid: z.string(),
   aboutMe: z.string().optional(),
   islamicBranch: z.enum(['sunni', 'shia', 'other']).optional(),
   language: z.enum(['en', 'ar', 'ur', 'fr', 'es']).optional(),
@@ -18,12 +19,11 @@ type FormState = {
   error: string | null;
 }
 
-export async function getUserProfile(): Promise<UserProfile | null> {
-  const user = auth.currentUser;
-  if (!user) return null;
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  if (!uid) return null;
 
   try {
-    const docRef = doc(db, 'users', user.uid);
+    const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -39,15 +39,8 @@ export async function getUserProfile(): Promise<UserProfile | null> {
 }
 
 export async function updateUserProfile(prevState: FormState, formData: FormData): Promise<FormState> {
-  const user = auth.currentUser;
-  if (!user) {
-    return {
-      message: null,
-      error: 'You must be logged in to update your profile.',
-    };
-  }
-
-  const validatedFields = profileSchema.safeParse({
+   const validatedFields = profileSchema.safeParse({
+    uid: formData.get('uid'),
     aboutMe: formData.get('aboutMe'),
     islamicBranch: formData.get('islamicBranch'),
     language: formData.get('language'),
@@ -61,9 +54,18 @@ export async function updateUserProfile(prevState: FormState, formData: FormData
     };
   }
 
+  const { uid, ...profileData } = validatedFields.data;
+
+  if (!uid) {
+     return {
+      message: null,
+      error: 'You must be logged in to update your profile.',
+    };
+  }
+
   try {
-    const userProfileRef = doc(db, 'users', user.uid);
-    await setDoc(userProfileRef, validatedFields.data, { merge: true });
+    const userProfileRef = doc(db, 'users', uid);
+    await setDoc(userProfileRef, profileData, { merge: true });
     
     revalidatePath('/settings'); // Re-renders the settings page with new data
     return {
