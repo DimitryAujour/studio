@@ -41,10 +41,10 @@ export default function SettingsPage() {
   const [state, formAction] = useActionState(updateUserProfile, initialState);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        const userProfile = await getUserProfile(user.uid);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        const userProfile = await getUserProfile(currentUser.uid);
         setProfile(userProfile);
       } else {
         setUser(null);
