@@ -32,6 +32,8 @@ export function UserNav() {
 
   const handleSignOut = async () => {
     try {
+      // Clear the session storage key for the dua of the day
+      window.sessionStorage.removeItem('dua-of-the-day-shown');
       await signOut(auth);
       router.push('/auth');
     } catch (error) {
