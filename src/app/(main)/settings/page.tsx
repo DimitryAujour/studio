@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useActionState, useEffect, useState, useTransition } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,29 +20,56 @@ import { auth } from '@/lib/firebase/config';
 import Link from 'next/link';
 
 function SubmitButton() {
-  const [isPending, startTransition] = useTransition();
-
-  // This is a bit of a hack to get the pending state from the form
-  useEffect(() => {
-    const form = document.querySelector('form');
-    if (form) {
-      const handler = (e: SubmitEvent) => {
-        if ((e.target as HTMLFormElement).checkValidity()) {
-          startTransition(() => {});
-        }
-      };
-      form.addEventListener('submit', handler);
-      return () => form.removeEventListener('submit', handler);
-    }
-  }, [startTransition]);
-
+  const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={isPending}>
-      {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+    <Button type="submit" disabled={pending}>
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
       Update Profile
     </Button>
   );
+}
+
+// Custom hook to get form status for the submit button
+function useFormStatus() {
+  const [isPending, setIsPending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    const handleSubmit = (e: Event) => {
+      if ((e.target as HTMLFormElement).checkValidity()) {
+        setIsSubmitting(true);
+      }
+    };
+
+    const handleReset = () => {
+      setIsSubmitting(false);
+    };
+
+    form.addEventListener('submit', handleSubmit);
+    form.addEventListener('reset', handleReset); // Listen for form reset
+
+    return () => {
+      form.removeEventListener('submit', handleSubmit);
+      form.removeEventListener('reset', handleReset);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isSubmitting) {
+      setIsPending(true);
+      const timeout = setTimeout(() => setIsPending(false), 5000); // Reset pending state after a delay
+      return () => clearTimeout(timeout);
+    } else {
+      setIsPending(false);
+    }
+  }, [isSubmitting]);
+
+
+  return { pending: isPending };
 }
 
 
@@ -64,6 +92,7 @@ export default function SettingsPage() {
         setUser(null);
         setProfile(null);
       }
+      // Only set loading to false after auth state has been determined.
       setLoading(false);
     });
     return () => unsubscribe();
@@ -128,7 +157,7 @@ export default function SettingsPage() {
     )
   }
 
-  if (!user || !profile) {
+  if (!user) {
      return (
         <div className="flex flex-col gap-6 items-center text-center">
              <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -142,6 +171,19 @@ export default function SettingsPage() {
             </Button>
         </div>
      )
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex flex-col gap-6 items-center text-center">
+        <h1 className="text-3xl font-bold font-headline tracking-tight">
+          Settings
+        </h1>
+        <p className="text-muted-foreground">
+          Could not load your profile. Please try again later.
+        </p>
+      </div>
+    );
   }
 
 
