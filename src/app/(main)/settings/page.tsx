@@ -69,8 +69,10 @@ export default function SettingsPage() {
 
       const userProfileRef = doc(db, 'users', user.uid);
       await setDoc(userProfileRef, { avatarUrl: downloadURL }, { merge: true });
-
-      setProfile((prevProfile) => prevProfile ? { ...prevProfile, avatarUrl: downloadURL } : { avatarUrl: downloadURL } as UserProfile);
+      
+      // Manually update the local profile state to trigger a re-render
+      const updatedProfile = { ...profile, avatarUrl: downloadURL } as UserProfile;
+      setProfile(updatedProfile);
 
       toast({
         title: 'Success!',
