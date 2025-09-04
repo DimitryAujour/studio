@@ -36,6 +36,7 @@ export default function SettingsPage() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchStatus, setFetchStatus] = useState('pending');
 
   const initialState = { message: null, error: null };
   const [state, formAction] = useActionState(updateUserProfile, initialState);
@@ -44,11 +45,22 @@ export default function SettingsPage() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        const userProfile = await getUserProfile(currentUser.uid);
-        setProfile(userProfile);
+        try {
+            const userProfile = await getUserProfile(currentUser.uid);
+            if (userProfile) {
+                setProfile(userProfile);
+                setFetchStatus('success');
+            } else {
+                setFetchStatus('not-found');
+            }
+        } catch (error) {
+            console.error(error);
+            setFetchStatus('error');
+        }
       } else {
         setUser(null);
         setProfile(null);
+        setFetchStatus('no-user');
       }
       setLoading(false);
     });
@@ -146,6 +158,14 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
+       <div className="p-4 bg-blue-100 border border-blue-400 rounded-md text-blue-800">
+        <p>
+          <strong>Debug Info:</strong> Profile fetch status is: <strong className="font-mono">{fetchStatus}</strong>.
+          {fetchStatus === 'success' && ' Profile data loaded!'}
+          {fetchStatus === 'not-found' && ' Profile document not found in Firestore.'}
+          {fetchStatus === 'error' && ' An error occurred while fetching the profile.'}
+        </p>
+      </div>
       <div>
         <h1 className="text-3xl font-bold font-headline tracking-tight">
           Settings
@@ -247,3 +267,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
