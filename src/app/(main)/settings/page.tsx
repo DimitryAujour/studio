@@ -149,11 +149,6 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">
           Could not load your profile. Please try again later.
         </p>
-         <div className="p-4 bg-yellow-100 border border-yellow-400 rounded-md text-yellow-800">
-          <p>
-            <strong>Debug Info:</strong> Profile fetch status is: <strong className="font-mono">{fetchStatus}</strong>.
-          </p>
-        </div>
       </div>
     );
   }
@@ -161,12 +156,6 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-       <div className="p-4 bg-blue-100 border border-blue-400 rounded-md text-blue-800">
-        <p>
-          <strong>Debug Info:</strong> Profile fetch status is: <strong className="font-mono">{fetchStatus}</strong>.
-          {fetchStatus === 'success' && profile && ' Profile data loaded!'}
-        </p>
-      </div>
       <div>
         <h1 className="text-3xl font-bold font-headline tracking-tight">
           Settings
@@ -268,5 +257,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    
