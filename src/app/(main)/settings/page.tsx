@@ -107,7 +107,8 @@ export default function SettingsPage() {
       await setDoc(userProfileRef, { avatarUrl: downloadURL }, { merge: true });
 
       // Update the local state to show the new avatar immediately
-      setProfile((prevProfile) => prevProfile ? { ...prevProfile, avatarUrl: downloadURL } : null);
+      setProfile((prevProfile) => prevProfile ? { ...prevProfile, avatarUrl: downloadURL } : { avatarUrl: downloadURL } as UserProfile);
+
 
       toast({
         title: 'Success!',
@@ -321,3 +322,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
