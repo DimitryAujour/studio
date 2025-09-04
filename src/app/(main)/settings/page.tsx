@@ -14,11 +14,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/lib/types';
 import { Loader2, User } from 'lucide-react';
-import { getUserProfile, updateUserProfile } from './actions';
+import { updateUserProfile } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { onAuthStateChanged, User as AuthUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
 import Link from 'next/link';
+import { doc, getDoc } from 'firebase/firestore';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -35,7 +36,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [fetchStatus, setFetchStatus] = useState('pending');
+  const [loading, setLoading] = useState(true);
 
   const initialState = { message: null, error: null };
   const [state, formAction] = useActionState(updateUserProfile, initialState);
@@ -45,22 +46,23 @@ export default function SettingsPage() {
       if (currentUser) {
         setUser(currentUser);
         try {
-            const userProfile = await getUserProfile(currentUser.uid);
-            if (userProfile) {
-                setProfile(userProfile);
-                setFetchStatus('success');
+            const docRef = doc(db, 'users', currentUser.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                setProfile(docSnap.data() as UserProfile);
             } else {
-                setFetchStatus('not-found');
+                console.log("No such document!");
+                setProfile(null);
             }
         } catch (error) {
-            console.error(error);
-            setFetchStatus('error');
+            console.error("Error fetching user profile:", error);
+            setProfile(null);
         }
       } else {
         setUser(null);
         setProfile(null);
-        setFetchStatus('no-user');
       }
+      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -81,7 +83,7 @@ export default function SettingsPage() {
     }
   }, [state, toast]);
 
-  if (fetchStatus === 'pending') {
+  if (loading) {
     return (
        <div className="flex flex-col gap-6">
          <div>
@@ -124,7 +126,7 @@ export default function SettingsPage() {
     )
   }
 
-  if (fetchStatus === 'no-user') {
+  if (!user) {
      return (
         <div className="flex flex-col gap-6 items-center text-center">
              <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -140,7 +142,7 @@ export default function SettingsPage() {
      )
   }
 
-  if (fetchStatus === 'error' || (fetchStatus === 'not-found' && !profile)) {
+  if (!profile) {
     return (
       <div className="flex flex-col gap-6 items-center text-center">
         <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -177,7 +179,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-8">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={profile!.avatarUrl} alt="User avatar" />
+                <AvatarImage src={profile.avatarUrl} alt="User avatar" />
                 <AvatarFallback>
                   <User className="h-10 w-10" />
                 </AvatarFallback>
@@ -196,13 +198,13 @@ export default function SettingsPage() {
                 id="aboutMe"
                 name="aboutMe"
                 placeholder="Tell us a little bit about yourself"
-                defaultValue={profile!.aboutMe}
+                defaultValue={profile.aboutMe}
               />
             </div>
 
             <div className="grid gap-2">
               <Label>Islamic Branch</Label>
-              <RadioGroup name="islamicBranch" defaultValue={profile!.islamicBranch} className="flex gap-4">
+              <RadioGroup name="islamicBranch" defaultValue={profile.islamicBranch} className="flex gap-4">
                 <div>
                   <RadioGroupItem value="sunni" id="sunni" className="peer sr-only" />
                   <Label htmlFor="sunni" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
@@ -227,7 +229,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="grid gap-2">
                   <Label htmlFor="language">Language</Label>
-                   <Select name="language" defaultValue={profile!.language}>
+                   <Select name="language" defaultValue={profile.language}>
                       <SelectTrigger id="language">
                           <SelectValue placeholder="Select language" />
                       </SelectTrigger>
@@ -244,7 +246,7 @@ export default function SettingsPage() {
 
             <div className="grid gap-2">
               <Label htmlFor="values">My Values</Label>
-              <Input name="values" id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue={profile!.values}/>
+              <Input name="values" id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue={profile.values}/>
                <p className="text-xs text-muted-foreground">
                   Enter a few values that are important to you, separated by commas.
                 </p>
