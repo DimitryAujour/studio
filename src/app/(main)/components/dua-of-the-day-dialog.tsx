@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { useSessionStorage } from '@/hooks/use-session-storage';
 import { useEffect, useState } from 'react';
@@ -66,6 +69,10 @@ export function DuaOfTheDayDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="p-0 border-0 max-w-lg h-screen sm:h-auto sm:max-h-[90vh] flex items-center justify-center text-center !rounded-lg overflow-hidden">
+         <DialogHeader className="sr-only">
+          <DialogTitle>Dua of the Day</DialogTitle>
+          <DialogDescription>A daily prayer to inspire your learning journey.</DialogDescription>
+        </DialogHeader>
          <div className="relative flex size-full min-h-[550px] flex-col items-center justify-center p-6 text-center group/design-root overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-10" style={{backgroundImage: "url('https://picsum.photos/seed/dua/1200/800')"}} data-ai-hint="islamic calligraphy background"></div>
             <div className="z-10 flex flex-col items-center justify-center flex-grow animate-fade-in-up">
