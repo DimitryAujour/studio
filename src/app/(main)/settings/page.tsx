@@ -2,6 +2,7 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,49 +31,6 @@ function SubmitButton() {
   );
 }
 
-// Custom hook to get form status for the submit button
-function useFormStatus() {
-  const [isPending, setIsPending] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const form = document.querySelector('form');
-    if (!form) return;
-
-    const handleSubmit = (e: Event) => {
-      if ((e.target as HTMLFormElement).checkValidity()) {
-        setIsSubmitting(true);
-      }
-    };
-
-    const handleReset = () => {
-      setIsSubmitting(false);
-    };
-
-    form.addEventListener('submit', handleSubmit);
-    form.addEventListener('reset', handleReset); // Listen for form reset
-
-    return () => {
-      form.removeEventListener('submit', handleSubmit);
-      form.removeEventListener('reset', handleReset);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isSubmitting) {
-      setIsPending(true);
-      const timeout = setTimeout(() => setIsPending(false), 5000); // Reset pending state after a delay
-      return () => clearTimeout(timeout);
-    } else {
-      setIsPending(false);
-    }
-  }, [isSubmitting]);
-
-
-  return { pending: isPending };
-}
-
-
 export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -92,7 +50,6 @@ export default function SettingsPage() {
         setUser(null);
         setProfile(null);
       }
-      // Only set loading to false after auth state has been determined.
       setLoading(false);
     });
     return () => unsubscribe();
