@@ -35,7 +35,6 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
   const [fetchStatus, setFetchStatus] = useState('pending');
 
   const initialState = { message: null, error: null };
@@ -62,7 +61,6 @@ export default function SettingsPage() {
         setProfile(null);
         setFetchStatus('no-user');
       }
-      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -83,7 +81,7 @@ export default function SettingsPage() {
     }
   }, [state, toast]);
 
-  if (loading) {
+  if (fetchStatus === 'pending') {
     return (
        <div className="flex flex-col gap-6">
          <div>
@@ -126,7 +124,7 @@ export default function SettingsPage() {
     )
   }
 
-  if (!user) {
+  if (fetchStatus === 'no-user') {
      return (
         <div className="flex flex-col gap-6 items-center text-center">
              <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -142,7 +140,7 @@ export default function SettingsPage() {
      )
   }
 
-  if (!profile) {
+  if (fetchStatus === 'error' || (fetchStatus === 'not-found' && !profile)) {
     return (
       <div className="flex flex-col gap-6 items-center text-center">
         <h1 className="text-3xl font-bold font-headline tracking-tight">
@@ -151,6 +149,11 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">
           Could not load your profile. Please try again later.
         </p>
+         <div className="p-4 bg-yellow-100 border border-yellow-400 rounded-md text-yellow-800">
+          <p>
+            <strong>Debug Info:</strong> Profile fetch status is: <strong className="font-mono">{fetchStatus}</strong>.
+          </p>
+        </div>
       </div>
     );
   }
@@ -161,9 +164,7 @@ export default function SettingsPage() {
        <div className="p-4 bg-blue-100 border border-blue-400 rounded-md text-blue-800">
         <p>
           <strong>Debug Info:</strong> Profile fetch status is: <strong className="font-mono">{fetchStatus}</strong>.
-          {fetchStatus === 'success' && ' Profile data loaded!'}
-          {fetchStatus === 'not-found' && ' Profile document not found in Firestore.'}
-          {fetchStatus === 'error' && ' An error occurred while fetching the profile.'}
+          {fetchStatus === 'success' && profile && ' Profile data loaded!'}
         </p>
       </div>
       <div>
@@ -175,7 +176,7 @@ export default function SettingsPage() {
         </p>
       </div>
       <form action={formAction}>
-        <Input type="hidden" name="uid" value={user.uid} />
+        <Input type="hidden" name="uid" value={user!.uid} />
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>
@@ -187,7 +188,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-8">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={profile.avatarUrl} alt="User avatar" />
+                <AvatarImage src={profile!.avatarUrl} alt="User avatar" />
                 <AvatarFallback>
                   <User className="h-10 w-10" />
                 </AvatarFallback>
@@ -206,13 +207,13 @@ export default function SettingsPage() {
                 id="aboutMe"
                 name="aboutMe"
                 placeholder="Tell us a little bit about yourself"
-                defaultValue={profile.aboutMe}
+                defaultValue={profile!.aboutMe}
               />
             </div>
 
             <div className="grid gap-2">
               <Label>Islamic Branch</Label>
-              <RadioGroup name="islamicBranch" defaultValue={profile.islamicBranch} className="flex gap-4">
+              <RadioGroup name="islamicBranch" defaultValue={profile!.islamicBranch} className="flex gap-4">
                 <div>
                   <RadioGroupItem value="sunni" id="sunni" className="peer sr-only" />
                   <Label htmlFor="sunni" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
@@ -237,7 +238,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="grid gap-2">
                   <Label htmlFor="language">Language</Label>
-                   <Select name="language" defaultValue={profile.language}>
+                   <Select name="language" defaultValue={profile!.language}>
                       <SelectTrigger id="language">
                           <SelectValue placeholder="Select language" />
                       </SelectTrigger>
@@ -254,7 +255,7 @@ export default function SettingsPage() {
 
             <div className="grid gap-2">
               <Label htmlFor="values">My Values</Label>
-              <Input name="values" id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue={profile.values}/>
+              <Input name="values" id="values" placeholder="e.g. Compassion, Family, Knowledge" defaultValue={profile!.values}/>
                <p className="text-xs text-muted-foreground">
                   Enter a few values that are important to you, separated by commas.
                 </p>
